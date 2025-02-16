@@ -3,4 +3,11 @@
     <string name="name">Nome</string>
     <string name="age">Idade</string>
     <string name="date">Data atual</string>
+    <string name="back_button">Botão de voltar</string>
+    <string name="photos">Fotos</string>
+    <string name="take_picture">Botão de tirar foto</string>
+    <string name="error">Houve um problema</string>
+    <string name="error_message">Tente novamente em alguns minutos</string>
+    <string name="empty_title">Sem fotos</string>
+    <string name="empty_message">Você ainda não tirou fotos</string>
 </resources>

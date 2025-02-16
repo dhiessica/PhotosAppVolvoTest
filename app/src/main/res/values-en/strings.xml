@@ -4,4 +4,12 @@
     <string name="name">Name</string>
     <string name="age">Age</string>
     <string name="date">Current date</string>
+    <string name="back_button">Back button</string>
+    <string name="photos">Photos</string>
+    <string name="take_picture">Take photo button</string>
+    <string name="error">Something went wrong</string>
+    <string name="error_message">Try again in a few minutes</string>
+    <string name="empty_message">You didn\'t take any photo yet</string>
+    <string name="empty_title">No photos</string>
+
 </resources>

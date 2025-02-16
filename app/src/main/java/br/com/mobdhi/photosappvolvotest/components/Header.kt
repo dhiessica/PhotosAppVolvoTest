@@ -1,4 +1,4 @@
-package br.com.mobdhi.photosappvolvotest.photos
+package br.com.mobdhi.photosappvolvotest.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,6 +8,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,21 +27,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.com.mobdhi.photosappvolvotest.R
-import br.com.mobdhi.photosappvolvotest.components.CustomTextField
 
 @Composable
 fun Header(
-    name: String = "",
-    onNameChange: (String) -> Unit = {},
-    age: String = "",
-    onAgeChange: (String) -> Unit = {},
-    date: String = ""
+    name: String,
+    onNameChange: (String) -> Unit,
+    age: String,
+    onAgeChange: (String) -> Unit,
+    date: String
 ) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp))
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
