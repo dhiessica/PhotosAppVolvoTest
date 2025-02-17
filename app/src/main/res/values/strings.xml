@@ -12,4 +12,5 @@
     <string name="empty_message">Você ainda não tirou fotos</string>
     <string name="photo_captured">Imagem capturada</string>
     <string name="permission_denied">A permissão para a câmera não foi concedida</string>
+    <string name="fill_fields">Preencha o nome e a idade</string>
 </resources>

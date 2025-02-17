@@ -13,5 +13,6 @@
     <string name="empty_title">No photos</string>
     <string name="photo_captured">Captured image</string>
     <string name="permission_denied">Camera permission not granted</string>
+    <string name="fill_fields">You should fill name and age fields</string>
 
 </resources>

@@ -8,11 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +29,9 @@ fun Header(
     onNameChange: (String) -> Unit,
     age: String,
     onAgeChange: (String) -> Unit,
-    date: String
+    date: String,
+    nameError: Boolean,
+    ageError: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -47,6 +44,7 @@ fun Header(
         CustomTextField(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(R.string.name),
+            isError = nameError,
             value = name,
             onValueChange = onNameChange
         )
@@ -57,6 +55,7 @@ fun Header(
             CustomTextField(
                 label = stringResource(R.string.age),
                 value = age,
+                isError = ageError,
                 maxCharacters = 3,
                 modifier = Modifier.weight(1f),
                 onlyDigits = true,
@@ -95,13 +94,15 @@ fun HeaderPreview() {
 
     Header(
         name = name.value,
-        age = age.value,
-        date = date.value,
         onNameChange = {
             name.value = it
         },
+        age = age.value,
         onAgeChange = {
             age.value = it
-        }
+        },
+        date = date.value,
+        nameError = false,
+        ageError = false
     )
 }

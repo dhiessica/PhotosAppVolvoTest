@@ -8,6 +8,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
@@ -43,10 +47,11 @@ import br.com.mobdhi.photosappvolvotest.components.ErrorMessage
 import br.com.mobdhi.photosappvolvotest.components.Header
 import br.com.mobdhi.photosappvolvotest.components.LoadingCircularProgress
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
+import br.com.mobdhi.photosappvolvotest.util.Util
 
 @Composable
 fun PhotosScreen(viewModel: PhotosViewModel, ) {
-    val uiState by viewModel.uiState.observeAsState(PhotosUIState.Loading)
+    val uiState by viewModel.uiState.observeAsState(PhotosUIState.Loading())
     val context = LocalContext.current
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
@@ -119,19 +124,44 @@ fun SuccessPhotosContent(
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
+    var nameError by remember { mutableStateOf(false) }
+    var ageError by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             Header(
                 name = name,
                 age = age,
                 date = date,
-                onNameChange = onNameChange,
-                onAgeChange = onAgeChange
+                nameError = nameError,
+                ageError = ageError,
+                onNameChange = { newName ->
+                    onNameChange(newName)
+                    nameError = newName.isBlank()
+                },
+                onAgeChange = { newAge ->
+                    onAgeChange(newAge)
+                    ageError = newAge.isBlank()
+                }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onCameraButtonClicked,
+                onClick = {
+                    nameError = name.isBlank()
+                    ageError = age.isBlank()
+
+                    if (name.isNotBlank() && age.isNotBlank()) {
+                        onCameraButtonClicked()
+                    } else {
+                        Toast.makeText(
+                            context,
+                            R.string.fill_fields,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+              },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             ) {
@@ -170,7 +200,10 @@ fun PhotosList(
             items(items = photos) { item ->
                 Column(modifier = Modifier.clickable { onPhotoClicked(item.uri.toUri()) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        val source = ImageDecoder.createSource(LocalContext.current.contentResolver, item.uri.toUri())
+                        val source = ImageDecoder.createSource(
+                            LocalContext.current.contentResolver,
+                            item.uri.toUri()
+                        )
                         val bitmap = ImageDecoder.decodeBitmap(source)
 
                         Image(
@@ -179,13 +212,32 @@ fun PhotosList(
                             modifier = Modifier.height(100.dp),
                             contentScale = ContentScale.FillHeight
                         )
+                        Column {
+                            Text(
+                                text = item.uri.substringAfterLast("/"),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
 
-                        Text(
-                            text = item.toString(),
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                        )
+                            )
+                            Text(
+                                text = Util.convertTimestampToLocalDate(item.date).toString(),
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+
+                            )
+                            Text(
+                                text = "${item.name} ${stringResource(R.string.age).lowercase()}: ${item.age}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                            )
+                        }
+
                     }
                     if(photos.last() != item) {
                         HorizontalDivider()
@@ -204,7 +256,7 @@ fun PhotosList(
 @Composable
 fun PhotosScreenPreview() {
     PhotosScreenContent(
-        uiState = PhotosUIState.Loading,
+        uiState = PhotosUIState.Loading(),
         onNameChange = {},
         onAgeChange = {},
         onCameraButtonClicked = {},

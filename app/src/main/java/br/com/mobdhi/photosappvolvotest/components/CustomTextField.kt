@@ -27,6 +27,7 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     label: String = "",
     value: String,
+    isError: Boolean = false,
     onValueChange: (String) -> Unit,
     maxCharacters: Int = 100,
     onlyDigits: Boolean = false,
@@ -37,6 +38,7 @@ fun CustomTextField(
     TextField(
         label = { Text(label) },
         value = value,
+        isError = isError,
         onValueChange = {
             if ((!onlyDigits || it.isDigitsOnly()) && it.length <= maxCharacters) {
                 onValueChange(it)
