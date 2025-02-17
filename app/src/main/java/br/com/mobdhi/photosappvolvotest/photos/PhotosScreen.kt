@@ -37,10 +37,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import br.com.mobdhi.photosappvolvotest.R
 import br.com.mobdhi.photosappvolvotest.components.ErrorMessage
 import br.com.mobdhi.photosappvolvotest.components.Header
 import br.com.mobdhi.photosappvolvotest.components.LoadingCircularProgress
+import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
 
 @Composable
 fun PhotosScreen(viewModel: PhotosViewModel, ) {
@@ -112,7 +114,7 @@ fun SuccessPhotosContent(
     name: String,
     age: String,
     date: String,
-    photosList: List<Uri?>,
+    photosList: List<Photo>,
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit
@@ -151,7 +153,7 @@ fun SuccessPhotosContent(
 @Composable
 fun PhotosList(
     modifier: Modifier = Modifier,
-    photos: List<Uri?>,
+    photos: List<Photo>,
     onPhotoClicked: (Uri?) -> Unit = {}
 ) {
     if (photos.isNotEmpty())
@@ -166,9 +168,9 @@ fun PhotosList(
                 )
         ) {
             items(items = photos) { item ->
-                Column(modifier = Modifier.clickable { onPhotoClicked(item) }) {
+                Column(modifier = Modifier.clickable { onPhotoClicked(item.uri.toUri()) }) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        val source = ImageDecoder.createSource(LocalContext.current.contentResolver, item ?: Uri.EMPTY)
+                        val source = ImageDecoder.createSource(LocalContext.current.contentResolver, item.uri.toUri())
                         val bitmap = ImageDecoder.decodeBitmap(source)
 
                         Image(

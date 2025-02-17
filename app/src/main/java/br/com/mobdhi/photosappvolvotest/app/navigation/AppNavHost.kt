@@ -19,7 +19,7 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
         composable<PhotosRoute> {
             val viewModel: PhotosViewModel = getViewModel()
 
-            LaunchedEffect(Unit) { viewModel.loadPhotos() }
+            LaunchedEffect(Unit) { viewModel.loadAllPhotos() }
 
             PhotosScreen(viewModel = viewModel)
         }

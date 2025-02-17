@@ -1,9 +1,21 @@
 package br.com.mobdhi.photosappvolvotest.app.di
 
+import br.com.mobdhi.photosappvolvotest.data.PhotosAppOfflineDataBase
+import br.com.mobdhi.photosappvolvotest.photos.PhotosRepositoryImpl
 import br.com.mobdhi.photosappvolvotest.photos.PhotosViewModel
+import br.com.mobdhi.photosappvolvotest.photos.domain.PhotosRepository
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 fun appKoinModule() = module {
-    viewModel { PhotosViewModel() }
+
+    single<PhotosRepository> {
+        PhotosRepositoryImpl(
+            PhotosAppOfflineDataBase
+                .getDatabase(androidContext()).photoDao()
+        )
+    }
+
+    viewModel { PhotosViewModel(get()) }
 }
