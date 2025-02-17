@@ -20,13 +20,8 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
             val viewModel: PhotosViewModel = getViewModel()
 
             LaunchedEffect(Unit) { viewModel.loadPhotos() }
-            PhotosScreen(
-                viewModel = viewModel,
-                navigateToTakePictureScreen = {
-                    //todo
-                }
-            )
-        }
 
+            PhotosScreen(viewModel = viewModel)
+        }
     }
 }

@@ -5,9 +5,11 @@
     <string name="date">Data atual</string>
     <string name="back_button">Botão de voltar</string>
     <string name="photos">Fotos</string>
-    <string name="take_picture">Botão de tirar foto</string>
+    <string name="take_photo">Botão de tirar foto</string>
     <string name="error">Houve um problema</string>
     <string name="error_message">Tente novamente em alguns minutos</string>
     <string name="empty_title">Sem fotos</string>
     <string name="empty_message">Você ainda não tirou fotos</string>
+    <string name="photo_captured">Imagem capturada</string>
+    <string name="permission_denied">A permissão para a câmera não foi concedida</string>
 </resources>
