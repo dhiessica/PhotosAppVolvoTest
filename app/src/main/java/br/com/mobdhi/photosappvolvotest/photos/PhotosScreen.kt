@@ -50,7 +50,10 @@ import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
 import br.com.mobdhi.photosappvolvotest.util.Util
 
 @Composable
-fun PhotosScreen(viewModel: PhotosViewModel, ) {
+fun PhotosScreen(
+    viewModel: PhotosViewModel,
+    navigateToPhotoDetail: (Uri) -> Unit
+) {
     val uiState by viewModel.uiState.observeAsState(PhotosUIState.Loading())
     val context = LocalContext.current
 
@@ -80,7 +83,8 @@ fun PhotosScreen(viewModel: PhotosViewModel, ) {
         onAgeChange = { viewModel.updateField { copy(age = it) } },
         onCameraButtonClicked = {
             permissionLauncher.launch(Manifest.permission.CAMERA)
-        }
+        },
+        onPhotoClicked = navigateToPhotoDetail
     )
 }
 
@@ -90,6 +94,7 @@ fun PhotosScreenContent(
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit,
+    onPhotoClicked: (Uri) -> Unit
 ) {
     when (uiState) {
         is PhotosUIState.Loading -> {
@@ -104,7 +109,8 @@ fun PhotosScreenContent(
                 photosList = uiState.photosList,
                 onNameChange = onNameChange,
                 onAgeChange = onAgeChange,
-                onCameraButtonClicked = onCameraButtonClicked
+                onCameraButtonClicked = onCameraButtonClicked,
+                onPhotoClicked = onPhotoClicked
             )
         }
 
@@ -122,7 +128,8 @@ fun SuccessPhotosContent(
     photosList: List<Photo>,
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
-    onCameraButtonClicked: () -> Unit
+    onCameraButtonClicked: () -> Unit,
+    onPhotoClicked: (Uri) -> Unit
 ) {
     val context = LocalContext.current
     var nameError by remember { mutableStateOf(false) }
@@ -175,7 +182,8 @@ fun SuccessPhotosContent(
 
         PhotosList(
             modifier = Modifier.padding(innerPadding),
-            photos = photosList
+            photos = photosList,
+            onPhotoClicked = onPhotoClicked
         )
     }
 }
@@ -184,7 +192,7 @@ fun SuccessPhotosContent(
 fun PhotosList(
     modifier: Modifier = Modifier,
     photos: List<Photo>,
-    onPhotoClicked: (Uri?) -> Unit = {}
+    onPhotoClicked: (Uri) -> Unit
 ) {
     if (photos.isNotEmpty())
         LazyColumn(
@@ -260,5 +268,6 @@ fun PhotosScreenPreview() {
         onNameChange = {},
         onAgeChange = {},
         onCameraButtonClicked = {},
+        onPhotoClicked = {},
     )
 }

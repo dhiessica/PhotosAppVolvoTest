@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
+import br.com.mobdhi.photosappvolvotest.photos.PhotoDetailScreen
 import br.com.mobdhi.photosappvolvotest.photos.PhotosScreen
 import br.com.mobdhi.photosappvolvotest.photos.PhotosViewModel
 import org.koin.androidx.compose.getViewModel
@@ -21,7 +23,22 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
 
             LaunchedEffect(Unit) { viewModel.loadAllPhotos() }
 
-            PhotosScreen(viewModel = viewModel)
+            PhotosScreen(
+                viewModel = viewModel,
+                navigateToPhotoDetail = {
+                    navHostController.navigate(PhotoDetailRoute(it.toString()))
+                }
+            )
+        }
+
+        composable<PhotoDetailRoute> { backStackEntry ->
+            val routeArguments = backStackEntry.toRoute<PhotoDetailRoute>()
+
+            PhotoDetailScreen(
+                imageName = routeArguments.imageName,
+                navigateUp = { navHostController.navigateUp() }
+            )
+
         }
     }
 }

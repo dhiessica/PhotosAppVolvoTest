@@ -6,4 +6,4 @@ import kotlinx.serialization.Serializable
 object PhotosRoute
 
 @Serializable
-object CameraRoute
+data class PhotoDetailRoute(val imageName: String)

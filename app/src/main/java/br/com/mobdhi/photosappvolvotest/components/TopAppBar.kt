@@ -1,6 +1,7 @@
 package br.com.mobdhi.photosappvolvotest.components
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,7 +32,7 @@ fun TopAppBar(
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowCircleUp,
+                        imageVector = Icons.Filled.ArrowBackIosNew,
                         contentDescription = stringResource(R.string.back_button)
                     )
                 }
