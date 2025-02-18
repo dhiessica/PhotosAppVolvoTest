@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import br.com.mobdhi.photosappvolvotest.photos.PhotoDetailScreen
 import br.com.mobdhi.photosappvolvotest.photos.PhotosScreen
+import br.com.mobdhi.photosappvolvotest.photos.PhotosUIState
 import br.com.mobdhi.photosappvolvotest.photos.PhotosViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -23,7 +24,11 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
             val viewModel: PhotosViewModel = getViewModel()
             val context = LocalContext.current
 
-            LaunchedEffect(Unit) { viewModel.loadAllPhotos(context) }
+            LaunchedEffect(Unit) {
+                if (viewModel.uiState.value is PhotosUIState.Loading) {
+                    viewModel.loadAllPhotos(context)
+                }
+            }
 
             PhotosScreen(
                 viewModel = viewModel,
