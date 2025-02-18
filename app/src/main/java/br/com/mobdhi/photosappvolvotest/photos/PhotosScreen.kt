@@ -56,7 +56,7 @@ fun PhotosScreen(
 ) {
     val context = LocalContext.current
 
-    val photosList by viewModel.uiState.collectAsState()
+    val photosList by viewModel.photos.collectAsState()
     val name by viewModel.name.collectAsState()
     val age by viewModel.age.collectAsState()
     val date by viewModel.date.collectAsState()

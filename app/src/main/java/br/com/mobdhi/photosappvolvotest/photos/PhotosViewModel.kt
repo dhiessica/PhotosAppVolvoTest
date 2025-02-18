@@ -2,7 +2,6 @@ package br.com.mobdhi.photosappvolvotest.photos
 
 import android.content.Context
 import android.net.Uri
-import android.os.Environment
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -16,14 +15,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.IOException
 
 class PhotosViewModel(
     private val photosRepository: PhotosRepository
 ) : ViewModel() {
 
-    var uiState = MutableStateFlow<PhotosUIState>(PhotosUIState.Loading)
+    var photos = MutableStateFlow<PhotosUIState>(PhotosUIState.Loading)
 
     var name = MutableStateFlow("")
 
@@ -35,11 +32,11 @@ class PhotosViewModel(
         private set
 
     fun loadAllPhotos() = viewModelScope.launch {
-        uiState.update { PhotosUIState.Loading }
+        photos.update { PhotosUIState.Loading }
 
         val result = withContext(Dispatchers.IO) { photosRepository.getAllPhotos() }
 
-        if (result.isSuccess) uiState.update {
+        if (result.isSuccess) photos.update {
             PhotosUIState.Success(
                 photosList = result.getOrNull()
                     ?.map {
@@ -54,7 +51,7 @@ class PhotosViewModel(
                     ?: emptyList(),
             )
         }
-        else uiState.update {
+        else photos.update {
             PhotosUIState.Error(
                 message = result.exceptionOrNull()?.message
             )
@@ -62,7 +59,7 @@ class PhotosViewModel(
     }
 
     fun savePhoto() = viewModelScope.launch {
-        uiState.update { PhotosUIState.Loading }
+        photos.update { PhotosUIState.Loading }
 
         val newPhoto = Photo(
             name = name.value,
@@ -74,7 +71,7 @@ class PhotosViewModel(
         val result = withContext(Dispatchers.IO) { photosRepository.insertPhoto(newPhoto) }
 
         if (result.isSuccess) loadAllPhotos()
-        else uiState.update {
+        else photos.update {
             PhotosUIState.Error(
                 message = result.exceptionOrNull()?.message
             )
@@ -94,7 +91,7 @@ class PhotosViewModel(
     }
 
     fun removeImage() {
-        imageUri.value = null
+        imageUri.value = if (imageUri.value?.let { ImageUtil.removeImageOnDownloadFolder(it) } == true) null else Uri.EMPTY
     }
 
 }

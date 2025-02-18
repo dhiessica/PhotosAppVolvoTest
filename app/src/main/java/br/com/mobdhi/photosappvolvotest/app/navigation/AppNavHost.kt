@@ -2,7 +2,6 @@ package br.com.mobdhi.photosappvolvotest.app.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -24,7 +23,7 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
             val viewModel: PhotosViewModel = getViewModel()
 
             LaunchedEffect(Unit) {
-                if (viewModel.uiState.value is PhotosUIState.Loading) {
+                if (viewModel.photos.value is PhotosUIState.Loading) {
                     viewModel.loadAllPhotos()
                 }
             }

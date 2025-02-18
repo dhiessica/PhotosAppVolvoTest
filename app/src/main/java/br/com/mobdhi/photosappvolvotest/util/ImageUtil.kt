@@ -1,11 +1,8 @@
 package br.com.mobdhi.photosappvolvotest.util
 
 import android.content.Context
-import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Environment
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.IOException
@@ -42,6 +39,24 @@ object ImageUtil {
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    fun removeImageOnDownloadFolder(uri: Uri): Boolean {
+        return try {
+            uri.path?.let {
+                val downloadsDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                val imageFile = File(downloadsDir, uri.toString().substringAfterLast("/"))
+                if (imageFile.exists()) {
+                    imageFile.delete()
+                }
+                return !imageFile.exists()
+            }
+            false
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
         }
     }
 
