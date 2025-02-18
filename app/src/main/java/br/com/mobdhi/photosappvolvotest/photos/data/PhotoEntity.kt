@@ -3,8 +3,6 @@ package br.com.mobdhi.photosappvolvotest.photos.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
-import java.sql.Date
-import java.sql.Timestamp
 
 @Entity(tableName = "photo")
 class PhotoEntity(
@@ -21,5 +19,5 @@ fun PhotoEntity.asModel() = Photo(
     name = name,
     age = age,
     date = date,
-    uri = uri
+    fileName = uri
 )

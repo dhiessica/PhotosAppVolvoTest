@@ -5,7 +5,6 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -46,6 +45,9 @@ import br.com.mobdhi.photosappvolvotest.components.Header
 import br.com.mobdhi.photosappvolvotest.components.LoadingCircularProgress
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
 import br.com.mobdhi.photosappvolvotest.util.DateUtil
+import br.com.mobdhi.photosappvolvotest.util.ImageUtil
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 
 @Composable
 fun PhotosScreen(
@@ -62,15 +64,15 @@ fun PhotosScreen(
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
             if (isImageSaved) {
-                viewModel.savePhoto(context)
+                viewModel.savePhoto()
             } else {
-                viewModel.removeImageUri()
+                viewModel.removeImage()
             }
         }
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
             if (permissionGranted) {
-                viewModel.generateImageUri(context)
+                viewModel.generateImage(context)
                 viewModel.imageUri.value?.let {
                     cameraLauncher.launch(it)
                 }
@@ -210,24 +212,30 @@ fun PhotosList(
                 )
         ) {
             items(items = photos) { item ->
-                Column(modifier = Modifier.clickable { onPhotoClicked(item.uri.toUri()) }) {
+                Column(modifier = Modifier.clickable { onPhotoClicked(item.fileName.toUri()) }) {
                     Row(
                         modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
 
-                        item.bitmap?.let {
-                            Image(
-                                bitmap = it,
-                                contentDescription = stringResource(R.string.photo_captured),
+                        val imageUri = ImageUtil.getImageUriFromFilename(
+                            LocalContext.current, item.fileName
+                        )
+                        if (imageUri != null) {
+                            AsyncImage(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(imageUri)
+                                    .crossfade(true)
+                                    .build(),
+                                contentDescription = "${stringResource(R.string.photo_captured)} ${item.fileName}",
                                 modifier = Modifier.size(100.dp),
                                 contentScale = ContentScale.Crop
                             )
                         }
                         Column {
                             Text(
-                                text = item.uri.substringAfterLast("/"),
+                                text = item.fileName.substringAfterLast("/"),
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -259,13 +267,14 @@ fun PhotosList(
             }
         }
     else
-        Column(modifier = modifier
-            .fillMaxSize()
-            .padding(
-                top = dimensionResource(R.dimen.padding_divisor),
-                start = dimensionResource(R.dimen.padding_large),
-                end = dimensionResource(R.dimen.padding_large)
-            )
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .padding(
+                    top = dimensionResource(R.dimen.padding_divisor),
+                    start = dimensionResource(R.dimen.padding_large),
+                    end = dimensionResource(R.dimen.padding_large)
+                )
         ) {
             ErrorMessage(
                 icon = null,

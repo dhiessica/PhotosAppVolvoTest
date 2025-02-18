@@ -49,6 +49,7 @@ fun ErrorMessage(
             text = message ?: stringResource(R.string.error_message),
             color = MaterialTheme.colorScheme.outline,
             style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
         )
     }
 }

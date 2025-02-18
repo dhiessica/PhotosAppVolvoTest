@@ -22,11 +22,10 @@ fun AppNavHost(navHostController: NavHostController = rememberNavController()) {
     ) {
         composable<PhotosRoute> {
             val viewModel: PhotosViewModel = getViewModel()
-            val context = LocalContext.current
 
             LaunchedEffect(Unit) {
                 if (viewModel.uiState.value is PhotosUIState.Loading) {
-                    viewModel.loadAllPhotos(context)
+                    viewModel.loadAllPhotos()
                 }
             }
 

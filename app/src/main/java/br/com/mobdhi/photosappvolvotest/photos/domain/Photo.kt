@@ -1,6 +1,5 @@
 package br.com.mobdhi.photosappvolvotest.photos.domain
 
-import androidx.compose.ui.graphics.ImageBitmap
 import br.com.mobdhi.photosappvolvotest.photos.data.PhotoEntity
 
 data class Photo(
@@ -8,8 +7,7 @@ data class Photo(
     val name: String,
     val age: String,
     val date: Long,
-    val uri: String,
-    val bitmap: ImageBitmap? = null
+    val fileName: String,
 )
 
 fun Photo.asEntity() = PhotoEntity(
@@ -17,5 +15,5 @@ fun Photo.asEntity() = PhotoEntity(
     name = name,
     age = age,
     date = date,
-    uri = uri
+    uri = fileName
 )
