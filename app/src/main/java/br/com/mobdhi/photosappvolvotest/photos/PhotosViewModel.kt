@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
-import br.com.mobdhi.photosappvolvotest.photos.domain.PhotosRepository
 import br.com.mobdhi.photosappvolvotest.photos.usecase.GetAllPhotosUseCase
+import br.com.mobdhi.photosappvolvotest.photos.usecase.SavePhotoUseCase
 import br.com.mobdhi.photosappvolvotest.util.DateUtil
 import br.com.mobdhi.photosappvolvotest.util.ImageUtil
 import kotlinx.coroutines.Dispatchers
@@ -18,25 +18,25 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PhotosViewModel(
-    private val photosRepository: PhotosRepository,
     private val getPhotosUseCase: GetAllPhotosUseCase,
+    private val savePhotoUseCase: SavePhotoUseCase
 ) : ViewModel() {
 
-    var photos = MutableStateFlow<PhotosUIState>(PhotosUIState.Loading)
+    val photos = MutableStateFlow<PhotosUIState>(PhotosUIState.Loading)
 
-    var name = MutableStateFlow("")
+    val name = MutableStateFlow("")
 
-    var age = MutableStateFlow("")
+    val age = MutableStateFlow("")
 
-    var date = MutableStateFlow(DateUtil.getFormattedCurrentDate())
+    val date = MutableStateFlow(DateUtil.getFormattedCurrentDate())
 
     var imageUri: MutableState<Uri?> = mutableStateOf(Uri.EMPTY)
         private set
 
-    fun loadAllPhotos(context: Context) = viewModelScope.launch {
+    fun loadAllPhotos() = viewModelScope.launch {
         photos.update { PhotosUIState.Loading }
 
-        val result = withContext(Dispatchers.IO) { getPhotosUseCase.getAllPhotos(context) }
+        val result = withContext(Dispatchers.IO) { getPhotosUseCase() }
 
         if (result.isSuccess) photos.update {
             PhotosUIState.Success(
@@ -60,7 +60,7 @@ class PhotosViewModel(
         }
     }
 
-    fun savePhoto(context: Context) = viewModelScope.launch {
+    fun savePhoto() = viewModelScope.launch {
         photos.update { PhotosUIState.Loading }
 
         val newPhoto = Photo(
@@ -70,9 +70,9 @@ class PhotosViewModel(
             fileName = imageUri.value.toString().substringAfterLast("/")
         )
 
-        val result = withContext(Dispatchers.IO) { photosRepository.insertPhoto(newPhoto) }
+        val result = withContext(Dispatchers.IO) { savePhotoUseCase(newPhoto) }
 
-        if (result.isSuccess) loadAllPhotos(context)
+        if (result.isSuccess) loadAllPhotos()
         else photos.update {
             PhotosUIState.Error(
                 message = result.exceptionOrNull()?.message

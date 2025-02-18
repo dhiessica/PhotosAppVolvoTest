@@ -64,7 +64,7 @@ fun PhotosScreen(
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
             if (isImageSaved) {
-                viewModel.savePhoto(context)
+                viewModel.savePhoto()
             } else {
                 viewModel.removeImage()
             }

@@ -6,7 +6,7 @@ import br.com.mobdhi.photosappvolvotest.photos.domain.PhotosRepository
 import br.com.mobdhi.photosappvolvotest.util.ImageUtil
 
 class GetAllPhotosUseCase(private val photoRepository: PhotosRepository) {
-    suspend fun getAllPhotos(context: Context): Result<List<Photo>> =
+    suspend operator fun invoke(): Result<List<Photo>> =
         try {
             val result = photoRepository.getAllPhotos().map { it }
 
@@ -14,7 +14,7 @@ class GetAllPhotosUseCase(private val photoRepository: PhotosRepository) {
                 val validPhotos: MutableList<Photo> = mutableListOf()
 
                 result.getOrNull()?.forEach { photo ->
-                    val imageFileExist = ImageUtil.getImageFileFromFilename(context, photo.fileName)
+                    val imageFileExist = ImageUtil.getImageFileFromFilename(photo.fileName)
                         ?.exists() == true
                     if (!imageFileExist) photoRepository.deletePhoto(photo)
                     else validPhotos.add(photo)

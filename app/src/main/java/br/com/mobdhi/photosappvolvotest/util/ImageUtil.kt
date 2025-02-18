@@ -11,7 +11,7 @@ object ImageUtil {
 
     private const val AUTHORITY = "br.com.mobdhi.photosappvolvotest.provider"
 
-    fun getImageFileFromFilename(context: Context, filename: String): File? {
+    fun getImageFileFromFilename(filename: String): File? {
         val downloadsDir =
             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
 

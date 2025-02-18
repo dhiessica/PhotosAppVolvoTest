@@ -1,4 +1,4 @@
-package br.com.mobdhi.photosappvolvotest.photos
+package br.com.mobdhi.photosappvolvotest.photos.repository
 
 import br.com.mobdhi.photosappvolvotest.photos.data.PhotoDao
 import br.com.mobdhi.photosappvolvotest.photos.data.asModel
