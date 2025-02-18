@@ -22,4 +22,12 @@ class PhotosRepositoryImpl(private val photoDao: PhotoDao) : PhotosRepository {
         } catch (e: Exception) {
             Result.failure(e)
         }
+
+    override suspend fun deletePhoto(photo: Photo): Result<Int> =
+        try {
+            val deletedPhotoId = photoDao.deletePhoto(photo.asEntity())
+            Result.success(deletedPhotoId)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
 }

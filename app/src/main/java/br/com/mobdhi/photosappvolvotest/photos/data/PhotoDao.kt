@@ -1,6 +1,7 @@
 package br.com.mobdhi.photosappvolvotest.photos.data
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
@@ -13,5 +14,8 @@ interface PhotoDao {
 
     @Query("SELECT * FROM photo")
     suspend fun getAllPhotos(): List<PhotoEntity>
+
+    @Delete
+    suspend fun deletePhoto(photo: PhotoEntity): Int
 
 }
