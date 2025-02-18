@@ -156,7 +156,9 @@ fun SuccessPhotosContent(
                 nameError = nameError,
                 ageError = ageError,
                 onNameChange = onNameChange,
-                onAgeChange = onAgeChange
+                onAgeChange = {
+                    if (!it.startsWith("0")) onAgeChange(it)
+                }
             )
         },
         floatingActionButton = {
