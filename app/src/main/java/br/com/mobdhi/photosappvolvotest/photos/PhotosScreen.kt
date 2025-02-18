@@ -8,7 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,40 +46,49 @@ import br.com.mobdhi.photosappvolvotest.components.ErrorMessage
 import br.com.mobdhi.photosappvolvotest.components.Header
 import br.com.mobdhi.photosappvolvotest.components.LoadingCircularProgress
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
-import br.com.mobdhi.photosappvolvotest.util.Util
+import br.com.mobdhi.photosappvolvotest.util.DateUtil
 
 @Composable
 fun PhotosScreen(
     viewModel: PhotosViewModel,
     navigateToPhotoDetail: (Uri) -> Unit
 ) {
-    val uiState by viewModel.uiState.observeAsState(PhotosUIState.Loading())
     val context = LocalContext.current
 
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
-        if (isImageSaved) {
-            viewModel.savePhoto()
-        } else {
-            viewModel.removeImageUri()
-        }
-    }
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
-        if (permissionGranted) {
-            viewModel.generateImageUri(context)
-            viewModel.imageUri.value?.let {
-                cameraLauncher.launch(it)
-            }
-        } else {
-            val message = context.getString(R.string.permission_denied)
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+    val photosList by viewModel.uiState.observeAsState(PhotosUIState.Loading)
+    val name by viewModel.name.observeAsState("")
+    val age by viewModel.age.observeAsState("")
+    val date by viewModel.date.observeAsState("")
 
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
+            if (isImageSaved) {
+                viewModel.savePhoto(context)
+            } else {
+                viewModel.removeImageUri()
+            }
         }
-    }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+            if (permissionGranted) {
+                viewModel.generateImageUri(context)
+                viewModel.imageUri.value?.let {
+                    cameraLauncher.launch(it)
+                }
+            } else {
+                val message = context.getString(R.string.permission_denied)
+                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+
+            }
+        }
 
     PhotosScreenContent(
-        uiState = uiState,
-        onNameChange = { viewModel.updateField { copy(name = it) } },
-        onAgeChange = { viewModel.updateField { copy(age = it) } },
+        name = name,
+        age = age,
+        date = date,
+        photosListUiState = photosList,
+        onNameChange = { viewModel.updateName(it) },
+        onAgeChange = { viewModel.updateAge(it) },
         onCameraButtonClicked = {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         },
@@ -90,23 +98,26 @@ fun PhotosScreen(
 
 @Composable
 fun PhotosScreenContent(
-    uiState: PhotosUIState,
+    name: String,
+    age: String,
+    date: String,
+    photosListUiState: PhotosUIState,
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit,
     onPhotoClicked: (Uri) -> Unit
 ) {
-    when (uiState) {
+    when (photosListUiState) {
         is PhotosUIState.Loading -> {
             LoadingCircularProgress()
         }
 
         is PhotosUIState.Success -> {
             SuccessPhotosContent(
-                name = uiState.name,
-                age = uiState.age,
-                date = uiState.date,
-                photosList = uiState.photosList,
+                name = name,
+                age = age,
+                date = date,
+                photosList = photosListUiState.photosList,
                 onNameChange = onNameChange,
                 onAgeChange = onAgeChange,
                 onCameraButtonClicked = onCameraButtonClicked,
@@ -115,7 +126,7 @@ fun PhotosScreenContent(
         }
 
         is PhotosUIState.Error -> {
-            ErrorMessage(message = uiState.message)
+            ErrorMessage(message = photosListUiState.message)
         }
     }
 }
@@ -143,14 +154,8 @@ fun SuccessPhotosContent(
                 date = date,
                 nameError = nameError,
                 ageError = ageError,
-                onNameChange = { newName ->
-                    onNameChange(newName)
-                    nameError = newName.isBlank()
-                },
-                onAgeChange = { newAge ->
-                    onAgeChange(newAge)
-                    ageError = newAge.isBlank()
-                }
+                onNameChange = onNameChange,
+                onAgeChange = onAgeChange
             )
         },
         floatingActionButton = {
@@ -168,7 +173,7 @@ fun SuccessPhotosContent(
                             Toast.LENGTH_LONG
                         ).show()
                     }
-              },
+                },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
             ) {
@@ -207,19 +212,19 @@ fun PhotosList(
         ) {
             items(items = photos) { item ->
                 Column(modifier = Modifier.clickable { onPhotoClicked(item.uri.toUri()) }) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        val source = ImageDecoder.createSource(
-                            LocalContext.current.contentResolver,
-                            item.uri.toUri()
-                        )
-                        val bitmap = ImageDecoder.decodeBitmap(source)
+                    Row(
+                        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                        Image(
-                            bitmap = bitmap.asImageBitmap(),
-                            contentDescription = stringResource(R.string.photo_captured),
-                            modifier = Modifier.height(100.dp),
-                            contentScale = ContentScale.FillHeight
-                        )
+                        item.bitmap?.let {
+                            Image(
+                                bitmap = it,
+                                contentDescription = stringResource(R.string.photo_captured),
+                                modifier = Modifier.height(100.dp),
+                                contentScale = ContentScale.FillHeight
+                            )
+                        }
                         Column {
                             Text(
                                 text = item.uri.substringAfterLast("/"),
@@ -230,7 +235,7 @@ fun PhotosList(
 
                             )
                             Text(
-                                text = Util.convertTimestampToLocalDate(item.date).toString(),
+                                text = DateUtil.convertTimestampToLocalDate(item.date).toString(),
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -247,7 +252,7 @@ fun PhotosList(
                         }
 
                     }
-                    if(photos.last() != item) {
+                    if (photos.last() != item) {
                         HorizontalDivider()
                     }
                 }
@@ -264,7 +269,10 @@ fun PhotosList(
 @Composable
 fun PhotosScreenPreview() {
     PhotosScreenContent(
-        uiState = PhotosUIState.Loading(),
+        name = "",
+        age = "",
+        date = "",
+        photosListUiState = PhotosUIState.Loading,
         onNameChange = {},
         onAgeChange = {},
         onCameraButtonClicked = {},

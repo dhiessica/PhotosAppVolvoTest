@@ -6,43 +6,57 @@ import android.os.Environment
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
 import br.com.mobdhi.photosappvolvotest.photos.domain.PhotosRepository
+import br.com.mobdhi.photosappvolvotest.util.DateUtil
+import br.com.mobdhi.photosappvolvotest.util.ImageUtil
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
-import java.sql.Timestamp
-import java.text.DateFormat
-import java.time.LocalDate
 import java.util.Date
-import java.util.Locale
 
 class PhotosViewModel(
     private val photosRepository: PhotosRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableLiveData<PhotosUIState>(PhotosUIState.Loading())
+    private val _uiState = MutableLiveData<PhotosUIState>(PhotosUIState.Loading)
     val uiState: LiveData<PhotosUIState> = _uiState
+
+    private val _name = MutableLiveData<String>()
+    val name: LiveData<String> = _name
+
+    private val _age = MutableLiveData<String>()
+    val age: LiveData<String> = _age
+
+    private val _date = MutableLiveData(DateUtil.getFormattedCurrentDate())
+    val date: LiveData<String> = _date
 
     var imageUri: MutableState<Uri?> = mutableStateOf(Uri.EMPTY)
         private set
 
-    fun loadAllPhotos() = viewModelScope.launch {
-        val currentState = _uiState.value
-        _uiState.postValue(PhotosUIState.Loading())
+    fun loadAllPhotos(context: Context) = viewModelScope.launch {
+        _uiState.postValue(PhotosUIState.Loading)
 
         val result = photosRepository.getAllPhotos()
 
         if (result.isSuccess) _uiState.postValue(
             PhotosUIState.Success(
-                name = currentState?.name ?: "",
-                age = currentState?.age ?: "",
-                date = getFormattedCurrentDate(),
-                photosList = result.getOrNull() ?: emptyList(),
+                photosList = result.getOrNull()
+                    ?.map {Photo(
+                        id = it.id,
+                        name = it.name,
+                        age = it.age,
+                        date = it.date,
+                        uri = it.uri,
+                        bitmap = ImageUtil.loadImageBitmapFromUri(it.uri.toUri(), context)
+                    )
+                    }
+                    ?: emptyList(),
             )
         )
         else _uiState.postValue(
@@ -52,37 +66,32 @@ class PhotosViewModel(
         )
     }
 
-    fun savePhoto() = viewModelScope.launch {
-        val currentState = _uiState.value
+    fun savePhoto(context: Context) = viewModelScope.launch {
+        _uiState.postValue(PhotosUIState.Loading)
 
-        if (currentState is PhotosUIState.Success) {
-            _uiState.postValue(PhotosUIState.Loading(currentState.name, currentState.age))
+        val newPhoto = Photo(
+            name = _name.value ?: "",
+            age = _age.value ?: "",
+            date = DateUtil.getTimestampFromDate(),
+            uri = imageUri.value.toString()
+        )
 
-            val newPhoto = Photo(
-                name = currentState.name,
-                age = currentState.age,
-                date = getTimestampFromDate(),
-                uri = imageUri.value.toString()
+        val result = photosRepository.insertPhoto(newPhoto)
+
+        if (result.isSuccess) loadAllPhotos(context)
+        else _uiState.postValue(
+            PhotosUIState.Error(
+                message = result.exceptionOrNull()?.message
             )
-            val result = photosRepository.insertPhoto(newPhoto)
-
-            if (result.isSuccess) loadAllPhotos()
-            else _uiState.postValue(
-                PhotosUIState.Error(
-                    message = result.exceptionOrNull()?.message
-                )
-            )
-        } else _uiState.postValue(
-            PhotosUIState.Error(null)
         )
     }
 
-    fun updateField(update: PhotosUIState.Success.() -> PhotosUIState.Success) {
-        val currentState = _uiState.value
-        if (currentState is PhotosUIState.Success) {
-            val updatedState = currentState.update()
-            _uiState.postValue(updatedState)
-        }
+    fun updateName(newName: String) {
+        _name.value = newName
+    }
+
+    fun updateAge(newAge: String) {
+        _age.value = newAge
     }
 
     fun generateImageUri(context: Context) {
@@ -111,17 +120,6 @@ class PhotosViewModel(
             e.printStackTrace()
         }
         return imageFile
-    }
-
-    private fun getFormattedCurrentDate(): String {
-        val currentDate = Date()
-        val locale = Locale.getDefault()
-        val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale)
-        return dateFormat.format(currentDate)
-    }
-
-    private fun getTimestampFromDate(date: Date = Date()): Long {
-        return date.time
     }
 
 }

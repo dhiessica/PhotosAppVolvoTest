@@ -1,6 +1,5 @@
 package br.com.mobdhi.photosappvolvotest.photos
 
-import android.graphics.ImageDecoder
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +14,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import br.com.mobdhi.photosappvolvotest.R
+import br.com.mobdhi.photosappvolvotest.components.ErrorMessage
 import br.com.mobdhi.photosappvolvotest.components.TopAppBar
+import br.com.mobdhi.photosappvolvotest.util.ImageUtil
 
 @Composable
 fun PhotoDetailScreen(
@@ -34,28 +35,30 @@ fun ImageDetailSuccess(
     imageUri: Uri,
     navigateUp: () -> Unit
 ) {
-    val source = ImageDecoder.createSource(
-        LocalContext.current.contentResolver,
-        imageUri
-    )
-    val bitmap = ImageDecoder.decodeBitmap(source)
+    val context = LocalContext.current
+    val image = ImageUtil.loadImageBitmapFromUri(imageUri, context)
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = imageUri.toString().substringAfterLast("/"),
-                canNavigateBack = true,
-                navigateUp = navigateUp
+    if (image != null) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = imageUri.toString().substringAfterLast("/"),
+                    canNavigateBack = true,
+                    navigateUp = navigateUp
+                )
+            },
+        ) { innerPadding ->
+
+            Image(
+                bitmap = image,
+                contentDescription = "${stringResource(R.string.photo_captured)} ${imageUri.toString().substringAfterLast("/")}",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentScale = ContentScale.FillHeight
             )
-        },
-    ) { innerPadding ->
 
-        Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = "${stringResource(R.string.photo_captured)} ${imageUri.toString().substringAfterLast("/")}",
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
-            contentScale = ContentScale.FillHeight
-        )
-
+        }
     }
+    else ErrorMessage(message = stringResource(R.string.error_view_photo_message))
 }
