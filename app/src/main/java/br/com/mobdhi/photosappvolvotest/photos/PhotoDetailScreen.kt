@@ -55,7 +55,7 @@ fun ImageDetailSuccess(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
-                contentScale = ContentScale.FillHeight
+                contentScale = ContentScale.Inside
             )
 
         }
