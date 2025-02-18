@@ -9,8 +9,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -205,19 +207,20 @@ fun PhotosList(
             state = rememberLazyListState(),
             modifier = modifier
                 .fillMaxSize()
-                .padding(
-                    top = dimensionResource(R.dimen.padding_large),
-                    start = dimensionResource(R.dimen.padding_large),
-                    end = dimensionResource(R.dimen.padding_large)
-                )
+                .padding(horizontal = dimensionResource(R.dimen.padding_large))
         ) {
             items(items = photos) { item ->
-                Column(modifier = Modifier.clickable { onPhotoClicked(item.fileName.toUri()) }) {
-                    Row(
-                        modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                Column {
+                    if (photos.first() == item) {
+                        Spacer(modifier = Modifier.height(dimensionResource(R.dimen.padding_large)))
+                    }
+
+                    Column(modifier = Modifier.clickable { onPhotoClicked(item.fileName.toUri()) }) {
+                        Row(
+                            modifier = Modifier.padding(vertical = dimensionResource(R.dimen.padding_medium)),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
 
                         val imageUri = ImageUtil.getImageUriFromFilename(
                             LocalContext.current, item.fileName
@@ -241,27 +244,28 @@ fun PhotosList(
                                     .fillMaxWidth()
                                     .padding(horizontal = dimensionResource(R.dimen.padding_small))
 
-                            )
-                            Text(
-                                text = DateUtil.convertTimestampToLocalDate(item.date).toString(),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                )
+                                Text(
+                                    text = DateUtil.convertTimestampToLocalDate(item.date).toString(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
 
-                            )
-                            Text(
-                                text = "${item.name} ${stringResource(R.string.age).lowercase()}: ${item.age}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
-                            )
+                                )
+                                Text(
+                                    text = "${item.name} ${stringResource(R.string.age).lowercase()}: ${item.age}",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                )
+                            }
+
+                            if (photos.last() != item) {
+                                HorizontalDivider()
+                            }
                         }
-
-                    }
-                    if (photos.last() != item) {
-                        HorizontalDivider()
                     }
                 }
             }
