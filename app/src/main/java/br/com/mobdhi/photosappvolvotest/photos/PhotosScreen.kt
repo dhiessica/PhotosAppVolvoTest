@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +28,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -90,9 +88,7 @@ fun PhotosScreen(
         photosListUiState = photosList,
         onNameChange = { viewModel.updateName(it) },
         onAgeChange = { viewModel.updateAge(it) },
-        onCameraButtonClicked = {
-            permissionLauncher.launch(Manifest.permission.CAMERA)
-        },
+        onCameraButtonClicked = { permissionLauncher.launch(Manifest.permission.CAMERA) },
         onPhotoClicked = navigateToPhotoDetail
     )
 }
@@ -263,10 +259,20 @@ fun PhotosList(
             }
         }
     else
-        ErrorMessage(
-            title = stringResource(R.string.empty_title),
-            message = stringResource(R.string.empty_message)
-        )
+        Column(modifier = modifier
+            .fillMaxSize()
+            .padding(
+                top = dimensionResource(R.dimen.padding_divisor),
+                start = dimensionResource(R.dimen.padding_large),
+                end = dimensionResource(R.dimen.padding_large)
+            )
+        ) {
+            ErrorMessage(
+                icon = null,
+                title = stringResource(R.string.empty_title),
+                message = stringResource(R.string.empty_message)
+            )
+        }
 }
 
 @Preview(showSystemUi = true)
@@ -276,7 +282,7 @@ fun PhotosScreenPreview() {
         name = "",
         age = "",
         date = "",
-        photosListUiState = PhotosUIState.Loading,
+        photosListUiState = PhotosUIState.Success(emptyList()),
         onNameChange = {},
         onAgeChange = {},
         onCameraButtonClicked = {},
