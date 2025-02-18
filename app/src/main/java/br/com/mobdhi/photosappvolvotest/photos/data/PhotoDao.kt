@@ -12,7 +12,7 @@ interface PhotoDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertPhoto(photo: PhotoEntity): Long
 
-    @Query("SELECT * FROM photo")
+    @Query("SELECT * FROM photo ORDER BY id DESC")
     suspend fun getAllPhotos(): List<PhotoEntity>
 
     @Delete
