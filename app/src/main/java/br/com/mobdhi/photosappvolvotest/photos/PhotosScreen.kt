@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -55,10 +56,10 @@ fun PhotosScreen(
 ) {
     val context = LocalContext.current
 
-    val photosList by viewModel.uiState.observeAsState(PhotosUIState.Loading)
-    val name by viewModel.name.observeAsState("")
-    val age by viewModel.age.observeAsState("")
-    val date by viewModel.date.observeAsState("")
+    val photosList by viewModel.uiState.collectAsState()
+    val name by viewModel.name.collectAsState()
+    val age by viewModel.age.collectAsState()
+    val date by viewModel.date.collectAsState()
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { isImageSaved ->
