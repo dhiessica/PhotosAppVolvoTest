@@ -16,6 +16,10 @@ koin = "3.4.0"
 room = "2.6.1"
 ksp = "2.0.0-1.0.21"
 coil = "2.2.2"
+mockito = "4.0.0"
+coroutines-test = "1.7.3"
+core-test = "2.2.0"
+robolectric = "4.8.1"
 
 
 [libraries]
@@ -44,6 +48,12 @@ androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 coil-kotlin-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+mockito-inline = { module = "org.mockito:mockito-inline", version.ref = "mockito" }
+mockito-kotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines-test" }
+core-testing = { module = "androidx.arch.core:core-testing", version.ref = "core-test" }
+robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectric" }
 
 
 [plugins]

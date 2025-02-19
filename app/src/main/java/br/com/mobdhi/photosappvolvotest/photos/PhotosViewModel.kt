@@ -63,15 +63,15 @@ class PhotosViewModel(
         }
     }
 
-    fun savePhoto() = viewModelScope.launch {
-        photos.update { PhotosUIState.Loading }
-
-        val newPhoto = Photo(
+    fun savePhoto(
+        newPhoto: Photo = Photo(
             name = name.value,
             age = age.value,
             date = DateUtil.getTimestampFromDate(),
             fileName = imageUri.value.toString().substringAfterLast("/")
         )
+    ) = viewModelScope.launch {
+        photos.update { PhotosUIState.Loading }
 
         val result = withContext(Dispatchers.IO) { savePhotoUseCase(newPhoto) }
 

@@ -19,7 +19,4 @@ class RemovePhotoUseCase(private val photoRepository: PhotosRepository) {
         } catch (e: Exception) {
             Result.failure(e)
         }
-
-
-
 }
