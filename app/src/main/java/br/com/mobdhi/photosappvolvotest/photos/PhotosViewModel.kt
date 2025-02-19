@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.mobdhi.photosappvolvotest.photos.domain.Photo
 import br.com.mobdhi.photosappvolvotest.photos.usecase.GetAllPhotosUseCase
+import br.com.mobdhi.photosappvolvotest.photos.usecase.RemovePhotoUseCase
 import br.com.mobdhi.photosappvolvotest.photos.usecase.SavePhotoUseCase
 import br.com.mobdhi.photosappvolvotest.util.DateUtil
 import br.com.mobdhi.photosappvolvotest.util.ImageUtil
@@ -20,7 +21,8 @@ import java.util.Date
 
 class PhotosViewModel(
     private val getPhotosUseCase: GetAllPhotosUseCase,
-    private val savePhotoUseCase: SavePhotoUseCase
+    private val savePhotoUseCase: SavePhotoUseCase,
+    private val removePhotoUseCase: RemovePhotoUseCase
 ) : ViewModel() {
 
     val photos = MutableStateFlow<PhotosUIState>(PhotosUIState.Loading)
@@ -81,6 +83,19 @@ class PhotosViewModel(
         }
     }
 
+    fun removePhoto(context: Context, photo: Photo) = viewModelScope.launch {
+        photos.update { PhotosUIState.Loading }
+
+        val result = withContext(Dispatchers.IO) { removePhotoUseCase(context, photo) }
+
+        if (result.isSuccess) loadAllPhotos()
+        else photos.update {
+            PhotosUIState.Error(
+                message = result.exceptionOrNull()?.message
+            )
+        }
+    }
+
     fun updateName(newName: String) {
         name.value = newName
     }
@@ -89,11 +104,11 @@ class PhotosViewModel(
         age.value = newAge
     }
 
-    fun generateImage(context: Context) {
+    fun prepareToTakePhoto(context: Context) {
         imageUri.value = ImageUtil.createImageOnDownloadFolder(context)
     }
 
-    fun removeImage() {
+    fun cancelPhoto() {
         imageUri.value = if (imageUri.value?.let { ImageUtil.removeImageOnDownloadFolder(it) } == true) null else Uri.EMPTY
     }
 

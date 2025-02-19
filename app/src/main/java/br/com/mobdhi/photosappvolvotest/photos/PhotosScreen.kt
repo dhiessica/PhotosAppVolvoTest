@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,10 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,6 +39,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -70,13 +72,13 @@ fun PhotosScreen(
             if (isImageSaved) {
                 viewModel.savePhoto()
             } else {
-                viewModel.removeImage()
+                viewModel.cancelPhoto()
             }
         }
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
             if (permissionGranted) {
-                viewModel.generateImage(context)
+                viewModel.prepareToTakePhoto(context)
                 viewModel.imageUri.value?.let {
                     cameraLauncher.launch(it)
                 }
@@ -95,7 +97,8 @@ fun PhotosScreen(
         onNameChange = { viewModel.updateName(it) },
         onAgeChange = { viewModel.updateAge(it) },
         onCameraButtonClicked = { permissionLauncher.launch(Manifest.permission.CAMERA) },
-        onPhotoClicked = navigateToPhotoDetail
+        onPhotoClicked = navigateToPhotoDetail,
+        onDeleteButtonClicked = { viewModel.removePhoto(context,it) }
     )
 }
 
@@ -108,7 +111,8 @@ fun PhotosScreenContent(
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit,
-    onPhotoClicked: (Uri) -> Unit
+    onPhotoClicked: (Uri) -> Unit,
+    onDeleteButtonClicked: (Photo) -> Unit
 ) {
     when (photosListUiState) {
         is PhotosUIState.Loading -> {
@@ -124,7 +128,8 @@ fun PhotosScreenContent(
                 onNameChange = onNameChange,
                 onAgeChange = onAgeChange,
                 onCameraButtonClicked = onCameraButtonClicked,
-                onPhotoClicked = onPhotoClicked
+                onPhotoClicked = onPhotoClicked,
+                onDeleteButtonClicked = onDeleteButtonClicked
             )
         }
 
@@ -143,18 +148,17 @@ fun SuccessPhotosContent(
     onNameChange: (String) -> Unit,
     onAgeChange: (String) -> Unit,
     onCameraButtonClicked: () -> Unit,
-    onPhotoClicked: (Uri) -> Unit
+    onPhotoClicked: (Uri) -> Unit,
+    onDeleteButtonClicked: (Photo) -> Unit
 ) {
     val context = LocalContext.current
     var nameError by remember { mutableStateOf(false) }
     var ageError by remember { mutableStateOf(false) }
-    val focusRequester = remember { FocusRequester() }
-
+    val focusManager = LocalFocusManager.current
 
     Scaffold(
         topBar = {
             Header(
-                modifier = Modifier.focusRequester(focusRequester),
                 name = name,
                 age = age,
                 date = date,
@@ -169,7 +173,7 @@ fun SuccessPhotosContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    focusRequester.requestFocus()
+                    focusManager.clearFocus()
                     nameError = name.isBlank()
                     ageError = age.isBlank()
 
@@ -197,7 +201,8 @@ fun SuccessPhotosContent(
         PhotosList(
             modifier = Modifier.padding(innerPadding),
             photos = photosList,
-            onPhotoClicked = onPhotoClicked
+            onPhotoClicked = onPhotoClicked,
+            onDeleteButtonClicked = onDeleteButtonClicked
         )
     }
 }
@@ -206,7 +211,8 @@ fun SuccessPhotosContent(
 fun PhotosList(
     modifier: Modifier = Modifier,
     photos: List<Photo>,
-    onPhotoClicked: (Uri) -> Unit
+    onPhotoClicked: (Uri) -> Unit,
+    onDeleteButtonClicked: (Photo) -> Unit
 ) {
     if (photos.isNotEmpty())
         LazyColumn(
@@ -238,33 +244,35 @@ fun PhotosList(
                                         .crossfade(true)
                                         .build(),
                                     contentDescription = "${stringResource(R.string.photo_captured)} ${item.fileName}",
-                                    modifier = Modifier.size(100.dp),
+                                    modifier = Modifier.size(100.dp).weight(1f),
                                     contentScale = ContentScale.Crop
                                 )
                             }
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = item.fileName.substringAfterLast("/"),
                                     style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
 
                                 )
                                 Text(
                                     text = DateUtil.convertTimestampToLocalDate(item.date),
                                     style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
 
                                 )
                                 Text(
                                     text = "${item.name} ${stringResource(R.string.age).lowercase()}: ${item.age}",
                                     style = MaterialTheme.typography.titleSmall,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                    modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.padding_small))
+                                )
+                            }
+                            IconButton(
+                                onClick = { onDeleteButtonClicked(item) }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Delete,
+                                    contentDescription = stringResource(R.string.delete)
                                 )
                             }
                         }
@@ -305,5 +313,6 @@ fun PhotosScreenPreview() {
         onAgeChange = {},
         onCameraButtonClicked = {},
         onPhotoClicked = {},
+        onDeleteButtonClicked = {}
     )
 }

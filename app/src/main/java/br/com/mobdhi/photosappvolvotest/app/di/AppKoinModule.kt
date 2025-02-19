@@ -5,6 +5,7 @@ import br.com.mobdhi.photosappvolvotest.photos.repository.PhotosRepositoryImpl
 import br.com.mobdhi.photosappvolvotest.photos.PhotosViewModel
 import br.com.mobdhi.photosappvolvotest.photos.domain.PhotosRepository
 import br.com.mobdhi.photosappvolvotest.photos.usecase.GetAllPhotosUseCase
+import br.com.mobdhi.photosappvolvotest.photos.usecase.RemovePhotoUseCase
 import br.com.mobdhi.photosappvolvotest.photos.usecase.SavePhotoUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -21,6 +22,7 @@ fun appKoinModule() = module {
 
     single { GetAllPhotosUseCase(get()) }
     single { SavePhotoUseCase(get()) }
+    single { RemovePhotoUseCase(get()) }
 
-    viewModel { PhotosViewModel(get(), get()) }
+    viewModel { PhotosViewModel(get(), get(), get()) }
 }

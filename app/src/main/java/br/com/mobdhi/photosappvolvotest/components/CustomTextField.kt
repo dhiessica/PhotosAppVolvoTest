@@ -3,6 +3,7 @@ package br.com.mobdhi.photosappvolvotest.components
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -32,6 +33,7 @@ fun CustomTextField(
     maxCharacters: Int = 100,
     onlyDigits: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     suffix: @Composable() (() -> Unit)? = null,
 ) {
@@ -54,6 +56,7 @@ fun CustomTextField(
             errorIndicatorColor = Color.Transparent
         ),
         keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         visualTransformation = visualTransformation,
         suffix = suffix
     )

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -16,6 +17,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,8 +34,9 @@ fun Header(
     date: String,
     nameError: Boolean,
     ageError: Boolean,
-    modifier: Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(bottomStart = 36.dp, bottomEnd = 36.dp))
@@ -43,11 +46,16 @@ fun Header(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         CustomTextField(
-            modifier = modifier.fillMaxWidth().padding(top= 24.dp),
+            modifier = Modifier.fillMaxWidth().padding(top= 24.dp),
             label = stringResource(R.string.name),
             isError = nameError,
             value = name,
-            onValueChange = onNameChange
+            onValueChange = onNameChange,
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    focusManager.clearFocus()
+                }
+            )
         )
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -58,10 +66,15 @@ fun Header(
                 value = age,
                 isError = ageError,
                 maxCharacters = 3,
-                modifier = modifier.weight(1f),
+                modifier = Modifier.weight(1f),
                 onlyDigits = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focusManager.clearFocus()
+                    }
                 ),
                 onValueChange = onAgeChange
             )
@@ -105,6 +118,5 @@ fun HeaderPreview() {
         date = date.value,
         nameError = false,
         ageError = false,
-        modifier = Modifier
     )
 }
