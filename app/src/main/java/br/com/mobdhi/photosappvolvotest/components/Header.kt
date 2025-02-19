@@ -31,7 +31,8 @@ fun Header(
     onAgeChange: (String) -> Unit,
     date: String,
     nameError: Boolean,
-    ageError: Boolean
+    ageError: Boolean,
+    modifier: Modifier
 ) {
     Column(
         modifier = Modifier
@@ -42,7 +43,7 @@ fun Header(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         CustomTextField(
-            modifier = Modifier.fillMaxWidth().padding(top= 24.dp),
+            modifier = modifier.fillMaxWidth().padding(top= 24.dp),
             label = stringResource(R.string.name),
             isError = nameError,
             value = name,
@@ -57,7 +58,7 @@ fun Header(
                 value = age,
                 isError = ageError,
                 maxCharacters = 3,
-                modifier = Modifier.weight(1f),
+                modifier = modifier.weight(1f),
                 onlyDigits = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number
@@ -103,6 +104,7 @@ fun HeaderPreview() {
         },
         date = date.value,
         nameError = false,
-        ageError = false
+        ageError = false,
+        modifier = Modifier
     )
 }

@@ -76,7 +76,7 @@ fun ImageDetailSuccess(
         }",
         modifier = modifier
             .fillMaxSize(),
-        contentScale = ContentScale.Inside
+        contentScale = ContentScale.Fit
     )
 }
 

@@ -34,6 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -146,10 +148,13 @@ fun SuccessPhotosContent(
     val context = LocalContext.current
     var nameError by remember { mutableStateOf(false) }
     var ageError by remember { mutableStateOf(false) }
+    val focusRequester = remember { FocusRequester() }
+
 
     Scaffold(
         topBar = {
             Header(
+                modifier = Modifier.focusRequester(focusRequester),
                 name = name,
                 age = age,
                 date = date,
@@ -164,6 +169,7 @@ fun SuccessPhotosContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
+                    focusRequester.requestFocus()
                     nameError = name.isBlank()
                     ageError = age.isBlank()
 
