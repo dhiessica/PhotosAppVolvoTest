@@ -222,32 +222,32 @@ fun PhotosList(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
 
-                        val imageUri = ImageUtil.getImageUriFromFilename(
-                            LocalContext.current, item.fileName
-                        )
-                        if (imageUri != null) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(imageUri)
-                                    .crossfade(true)
-                                    .build(),
-                                contentDescription = "${stringResource(R.string.photo_captured)} ${item.fileName}",
-                                modifier = Modifier.size(100.dp),
-                                contentScale = ContentScale.Crop
+                            val imageUri = ImageUtil.getImageUriFromFilename(
+                                LocalContext.current, item.fileName
                             )
-                        }
-                        Column {
-                            Text(
-                                text = item.fileName.substringAfterLast("/"),
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = dimensionResource(R.dimen.padding_small))
+                            if (imageUri != null) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(imageUri)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = "${stringResource(R.string.photo_captured)} ${item.fileName}",
+                                    modifier = Modifier.size(100.dp),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+                            Column {
+                                Text(
+                                    text = item.fileName.substringAfterLast("/"),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = dimensionResource(R.dimen.padding_small))
 
                                 )
                                 Text(
-                                    text = DateUtil.convertTimestampToLocalDate(item.date).toString(),
-                                    style = MaterialTheme.typography.titleMedium,
+                                    text = DateUtil.convertTimestampToLocalDate(item.date),
+                                    style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = dimensionResource(R.dimen.padding_small))
@@ -255,16 +255,15 @@ fun PhotosList(
                                 )
                                 Text(
                                     text = "${item.name} ${stringResource(R.string.age).lowercase()}: ${item.age}",
-                                    style = MaterialTheme.typography.bodyMedium,
+                                    style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(horizontal = dimensionResource(R.dimen.padding_small))
                                 )
                             }
-
-                            if (photos.last() != item) {
-                                HorizontalDivider()
-                            }
+                        }
+                        if (photos.last() != item) {
+                            HorizontalDivider()
                         }
                     }
                 }

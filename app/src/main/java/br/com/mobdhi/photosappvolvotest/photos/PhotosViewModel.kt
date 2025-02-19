@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class PhotosViewModel(
     private val getPhotosUseCase: GetAllPhotosUseCase,
@@ -28,7 +29,7 @@ class PhotosViewModel(
 
     val age = MutableStateFlow("")
 
-    val date = MutableStateFlow(DateUtil.getFormattedCurrentDate())
+    val date = MutableStateFlow(DateUtil.getFormattedDate(Date()))
 
     var imageUri: MutableState<Uri?> = mutableStateOf(Uri.EMPTY)
         private set
