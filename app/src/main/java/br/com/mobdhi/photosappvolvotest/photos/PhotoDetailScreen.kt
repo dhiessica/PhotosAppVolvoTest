@@ -39,7 +39,7 @@ fun PhotoDetailScreen(
     ) { innerPadding ->
 
         if (imageUri != null) {
-            ImageDetailSuccess(
+            PhotoDetailSuccess(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding),
@@ -62,7 +62,7 @@ fun PhotoDetailScreen(
 }
 
 @Composable
-fun ImageDetailSuccess(
+fun PhotoDetailSuccess(
     imageUri: Uri,
     modifier: Modifier
 ) {

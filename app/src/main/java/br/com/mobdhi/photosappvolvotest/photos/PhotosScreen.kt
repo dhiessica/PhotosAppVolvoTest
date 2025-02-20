@@ -248,7 +248,7 @@ fun PhotosList(
                                     contentScale = ContentScale.Crop
                                 )
                             }
-                            Column(modifier = Modifier.weight(1f)) {
+                            Column(modifier = Modifier.weight(2f)) {
                                 Text(
                                     text = item.fileName.substringAfterLast("/"),
                                     style = MaterialTheme.typography.titleSmall,

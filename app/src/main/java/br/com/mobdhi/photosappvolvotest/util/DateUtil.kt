@@ -19,8 +19,4 @@ object DateUtil {
         val dateFormat: DateFormat = DateFormat.getDateInstance(DateFormat.SHORT, locale)
         return dateFormat.format(date)
     }
-
-    fun getTimestampFromDate(date: Date = Date()): Long {
-        return date.time
-    }
 }
