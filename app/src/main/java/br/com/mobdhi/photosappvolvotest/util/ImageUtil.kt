@@ -6,6 +6,7 @@ import android.os.Environment
 import androidx.core.content.FileProvider
 import java.io.File
 import java.io.IOException
+import java.util.Date
 
 object ImageUtil {
 
@@ -71,7 +72,7 @@ object ImageUtil {
     }
 
     private fun createImageFile(
-        filename: String = "photo_${DateUtil.getTimestampFromDate()}.jpg"
+        filename: String = "photo_${Date().time}.jpg"
     ): File? {
         try {
             val downloadsDir =

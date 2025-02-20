@@ -67,7 +67,7 @@ class PhotosViewModel(
         newPhoto: Photo = Photo(
             name = name.value,
             age = age.value,
-            date = DateUtil.getTimestampFromDate(),
+            date = Date().time,
             fileName = imageUri.value.toString().substringAfterLast("/")
         )
     ) = viewModelScope.launch {

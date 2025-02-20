@@ -33,6 +33,7 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.File
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -75,7 +76,7 @@ class PhotosViewModelTest {
             Photo(
                 name = "Dhiessica",
                 age = "24",
-                date = DateUtil.getTimestampFromDate(),
+                date = Date().time,
                 fileName = "new_photo.jpg"
             )
         )
@@ -104,7 +105,7 @@ class PhotosViewModelTest {
         val newPhoto = Photo(
             name = "Dhiessica",
             age = "24",
-            date = DateUtil.getTimestampFromDate(),
+            date = Date().time,
             fileName = "new_photo.jpg"
         )
         `when`(savePhotoUseCase(newPhoto)).thenReturn(Result.success(1L))
@@ -121,7 +122,7 @@ class PhotosViewModelTest {
         val newPhoto = Photo(
             name = "New Photo",
             age = "30",
-            date = DateUtil.getTimestampFromDate(),
+            date = Date().time,
             fileName = "new_photo.jpg"
         )
 
@@ -139,7 +140,7 @@ class PhotosViewModelTest {
         val photo = Photo(
             name = "Dhiessica",
             age = "24",
-            date = DateUtil.getTimestampFromDate(),
+            date = Date().time,
             fileName = "new_photo.jpg"
         )
         `when`(removePhotoUseCase(context, photo)).thenReturn(Result.success(1))
@@ -156,7 +157,7 @@ class PhotosViewModelTest {
         val photo = Photo(
             name = "Dhiessica",
             age = "24",
-            date = DateUtil.getTimestampFromDate(),
+            date = Date().time,
             fileName = "new_photo.jpg"
         )
 
